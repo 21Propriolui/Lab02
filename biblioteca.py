@@ -2,12 +2,12 @@ def carica_da_file(file_path):
     """Carica i libri dal file"""
     # TODO
     try:
-        file_path = open('biblioteca.csv', 'r')
+        file = open(file_path, 'r')
     except FileNotFoundError:
         return None
-    max_sezioni = int(file_path.readline())
+    max_sezioni = int(file.readline())
     biblioteca = {}
-    for riga in file_path:
+    for riga in file:
         riga = riga.strip()
         campi = riga.split(',')
         nome_libro = campi[0]
@@ -16,13 +16,13 @@ def carica_da_file(file_path):
         num_pagine = int(campi[3])
         sezione = campi[4]
         if sezione not in biblioteca:
-            biblioteca[sezione] = []
-            nome_libro = {'autore' = autore,
-            'anno_pubblicazione' = anno_pubblicazione,
-            'num_pagine' = num_pagine,
-            'sezione' = sezione}
-            biblioteca[sezione].append(nome_libro)
-return biblioteca
+            nome_libro = {'autore' : autore,
+            'anno_pubblicazione' : anno_pubblicazione,
+            'num_pagine' : num_pagine,
+            'sezione' : sezione}
+            biblioteca[sezione] = {sezione : nome_libro}
+        file.close()
+    return biblioteca
 
 def aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path):
     """Aggiunge un libro nella biblioteca"""
@@ -32,11 +32,28 @@ def aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path)
 def cerca_libro(biblioteca, titolo):
     """Cerca un libro nella biblioteca dato il titolo"""
     # TODO
+    titolo = input('Digitare il nome del titolo da cercare')
+    for sezione in biblioteca:
+        for libro in sezione:
+            if titolo == libro['titolo']:
+                output = f"{titolo}, {titolo['autore']}, {titolo['anno_pubblicazione']}, {titolo['num_pagine']}, {titolo['sezione']}"
+                return output
+            else:
+                return None
 
 
 def elenco_libri_sezione_per_titolo(biblioteca, sezione):
     """Ordina i titoli di una data sezione della biblioteca in ordine alfabetico"""
     # TODO
+    sezione = input('Quale sezione si vuole ordinare?')
+    if sezione in '12345':
+        for s in biblioteca:
+            if s == sezione:
+                biblioteca[s].sort(key=lambda a: a['titolo'])
+                titoli = (s['titolo'])
+                return titoli
+            else:
+                return None
 
 
 def main():
