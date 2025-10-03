@@ -1,25 +1,30 @@
 def carica_da_file(file_path):
     """Carica i libri dal file"""
     # TODO
+    # creazione della biblioteca e dei libri con dizionari
+    # leggendo la prima riga contenente il numero di sezioni
     try:
         file = open(file_path, 'r')
-    max_sezioni = int(file.readline())
-    biblioteca = {}
-    for riga in file:
-        riga = riga.strip()
-        campi = riga.split(',')
-        titolo = campi[0]
-        autore = campi[1]
-        anno_pubblicazione = int(campi[2])
-        num_pagine = int(campi[3])
-        sezione = campi[4]
-        if sezione not in biblioteca:
+        num_sezioni = int(file.readline())
+        biblioteca = {}
+        for riga in file:
+            riga = riga.strip()
+            campi = riga.split(',')
+            titolo = campi[0]
+            autore = campi[1]
+            anno_pubblicazione = int(campi[2])
+            num_pagine = int(campi[3])
+            sezione = campi[4]
             libro = {'titolo' : titolo,
                      'autore' : autore,
                      'anno_pubblicazione' : anno_pubblicazione,
                      'num_pagine' : num_pagine,
                      'sezione' : sezione}
-            biblioteca[sezione].apend(libro)
+            # se la sezione letta è nuova creo una sezione nuova(lista) e ci appendo i libri
+            if sezione not in biblioteca:
+                biblioteca[sezione] = []
+            biblioteca[sezione].append(libro)
+        file.close()
         return biblioteca
     except FileNotFoundError:
         return None
@@ -27,47 +32,51 @@ def carica_da_file(file_path):
 def aggiungi_libro(biblioteca, titolo, autore, anno, pagine, sezione, file_path):
     """Aggiunge un libro nella biblioteca"""
     # TODO
+    # se esiste già il libro o se non esiste la sezione o non trova il file ritorno None
     sezione = str(sezione)
     if sezione not in biblioteca:
         return None
     for libro in biblioteca[sezione]:
         if libro['titolo'].lower() == titolo.lower():
             return None
-    nuovo_libro = {'titolo' : titolo,
-             'autore': autore,
-             'anno_pubblicazione': anno,
-             'num_pagine': pagine,
-             'sezione': sezione}
     try:
-        biblioteca[sezione].append(nuovo_libro)
-        file = open(file_path, 'a')
-        file.write(f"{titolo}\n, {autore}\n, {anno}\n, {pagine}\n, {sezione}\n")
-        return nuovo_libro
+        file = open(file_path, 'a')  # Apre il file in modalità append
+        file.write(f"{titolo}, {autore}, {anno}, {pagine}, {sezione}\n")
+        file.close()  # Chiude il file esplicitamente
     except FileNotFoundError:
-        biblioteca[sezione].remove(libro)
         return None
+    # altrimenti aggiungo il nuovo libro alla sezione richiesta
+    nuovo_libro = {'titolo': titolo,
+                   'autore': autore,
+                   'anno_pubblicazione': anno,
+                   'num_pagine': pagine,
+                   'sezione': sezione}
+    biblioteca[sezione].append(nuovo_libro)
+    return nuovo_libro
 
 def cerca_libro(biblioteca, titolo):
     """Cerca un libro nella biblioteca dato il titolo"""
     # TODO
+    # itero in ogni sezione chiedendo se il libro chiesto è lo stesso di quello su cui sta iterando
+    #  e poi alla fine se non ne ho trovato nessuno ritorna None
     for sezione in biblioteca.values():
         for libro in sezione:
             if libro['titolo'].lower() == titolo.lower():
                 return f"{libro['titolo']}, {libro['autore']}, {libro['anno_pubblicazione']}, {libro['num_pagine']}, {libro['sezione']}"
-            else:
-                return None
+    return None
 
 
 def elenco_libri_sezione_per_titolo(biblioteca, sezione):
     """Ordina i titoli di una data sezione della biblioteca in ordine alfabetico"""
     # TODO
+    # ordino ogni sezione per nome del libro, poi creo una lista contenente i titoli dei libri ordinati
     sezione = str(sezione)
     if sezione in biblioteca:
         ordinati = sorted(biblioteca[sezione], key=lambda libro: libro['titolo'].lower())
         titoli_ordinati = []
         for libro in ordinati:
             titoli_ordinati.append(libro['titolo'])
-            return libro['titolo']
+        return titoli_ordinati
     else:
         return None
 
